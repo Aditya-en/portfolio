@@ -1,3 +1,4 @@
+"use client"
 import dynamic from "next/dynamic"
 import GradientText from "@/components/gradient-text"
 import { Github, Linkedin, Mail } from "lucide-react"
