@@ -1,15 +1,18 @@
 // app/api/blogs/route.ts
 import { NextResponse } from 'next/server';
 import { getBlogPosts, createBlogPost } from '@/services/blogService';
-import { checkAdminPassword } from '@/lib/auth';
+import { authOptions } from '../auth/[...nextauth]/route';
+import { getServerSession } from "next-auth/next";
+
 
 // GET /api/blogs
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const onlyPublished = searchParams.get('published') !== 'false';
-    
+    console.log("fetching posts from db")
     const posts = await getBlogPosts(onlyPublished);
+    console.log(posts)
     return NextResponse.json(posts);
   } catch (error) {
     console.error('Error fetching blog posts:', error);
@@ -23,15 +26,13 @@ export async function GET(request: Request) {
 // POST /api/blogs
 export async function POST(request: Request) {
   try {
-    const { password, ...postData } = await request.json();
-    
-    // Check if password is correct
-    if (!checkAdminPassword(password)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+    const { ...postData } = await request.json();
+    console.log({postData})
     
     const id = await createBlogPost(postData);
     return NextResponse.json({ id }, { status: 201 });

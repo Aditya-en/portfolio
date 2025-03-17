@@ -26,6 +26,7 @@ export default function BlogPostPage() {
       try {
         const response = await fetch(`/api/blogs/${slug}`);
         if (response.ok) {
+          console.log(response)
           const data = await response.json();
           setPost(data);
         } else {
