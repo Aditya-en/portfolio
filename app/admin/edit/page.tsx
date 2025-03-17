@@ -7,6 +7,7 @@ import { BlogPost, BlogPostDTO } from '@/types/blog';
 import GradientText from '@/components/gradient-text';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useSession } from "next-auth/react";
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -27,6 +28,7 @@ export default function BlogEditor() {
   const postId = params?.id as string;
   const isEditing = !!postId;
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   const [formData, setFormData] = useState<Partial<BlogPostDTO>>({
     title: '',
@@ -45,22 +47,17 @@ export default function BlogEditor() {
 
   useEffect(() => {
     // Check if user is authenticated
-    const adminPassword = localStorage.getItem('adminPassword');
-    if (!adminPassword) {
+    if (status === "unauthenticated") {
       router.push('/admin');
       return;
     }
 
     // If editing, fetch the post
-    if (isEditing) {
+    if (isEditing && status === "authenticated") {
       const fetchPost = async () => {
         try {
-          const response = await fetch(`/api/blogs/${postId}`, {
-            headers: {
-              'Authorization': `Bearer ${adminPassword}`
-            }
-          });
-
+          const response = await fetch(`/api/blogs/${postId}`);
+          
           if (response.ok) {
             const post = await response.json();
             setFormData({
@@ -74,8 +71,6 @@ export default function BlogEditor() {
               coverImage: post.coverImage,
             });
           } else if (response.status === 401) {
-            // Unauthorized, redirect to login
-            localStorage.removeItem('adminPassword');
             router.push('/admin');
           } else {
             setError('Failed to fetch blog post');
@@ -135,8 +130,7 @@ export default function BlogEditor() {
     setError('');
     setSaving(true);
 
-    const adminPassword = localStorage.getItem('adminPassword');
-    if (!adminPassword) {
+    if (status !== "authenticated") {
       router.push('/admin');
       return;
     }
@@ -150,10 +144,7 @@ export default function BlogEditor() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          password: adminPassword
-        })
+        body: JSON.stringify(formData)
       });
 
       if (response.ok) {

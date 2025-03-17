@@ -31,14 +31,12 @@ import {
     const router = useRouter();
   
     useEffect(() => {
-      // Check if user is authenticated
       const adminPassword = localStorage.getItem('adminPassword');
+    
       if (!adminPassword) {
         router.push('/admin');
-        return;
       }
-  
-      // Fetch all blog posts (including unpublished)
+    
       const fetchPosts = async () => {
         try {
           const response = await fetch('/api/blogs?published=false', {
@@ -46,12 +44,12 @@ import {
               'Authorization': `Bearer ${adminPassword}`
             }
           });
-  
+    
           if (response.ok) {
             const data = await response.json();
             setPosts(data);
           } else if (response.status === 401) {
-            // Unauthorized, redirect to login
+            console.log("Unauthorized access. Redirecting to login.");
             localStorage.removeItem('adminPassword');
             router.push('/admin');
           } else {
@@ -63,15 +61,17 @@ import {
           setLoading(false);
         }
       };
-  
+    
       fetchPosts();
     }, [router]);
+    
   
     const handleDelete = async () => {
       if (!deleteId) return;
   
       const adminPassword = localStorage.getItem('adminPassword');
       if (!adminPassword) {
+        console.log("redirecting to /admin from dashboard")
         router.push('/admin');
         return;
       }
@@ -88,6 +88,8 @@ import {
         } else if (response.status === 401) {
           // Unauthorized, redirect to login
           localStorage.removeItem('adminPassword');
+          console.log("redirecting to /admin from dashboard a")
+
           router.push('/admin');
         } else {
           console.error('Failed to delete blog post');
@@ -100,6 +102,7 @@ import {
     const handleTogglePublish = async (post: BlogPost) => {
       const adminPassword = localStorage.getItem('adminPassword');
       if (!adminPassword) {
+        console.log("redirecting to /admin from dashboard")
         router.push('/admin');
         return;
       }
@@ -124,6 +127,7 @@ import {
         } else if (response.status === 401) {
           // Unauthorized, redirect to login
           localStorage.removeItem('adminPassword');
+          console.log("redirecting to /admin from dashboard")
           router.push('/admin');
         } else {
           console.error('Failed to update blog post');
@@ -135,6 +139,7 @@ import {
   
     const handleLogout = () => {
       localStorage.removeItem('adminPassword');
+      console.log("redirecting to /admin from dashboard")
       router.push('/admin');
     };
   

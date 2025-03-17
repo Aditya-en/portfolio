@@ -1,8 +1,9 @@
 // app/admin/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn, useSession } from "next-auth/react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,13 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push('/admin/dashboard');
+    }
+  }, [status, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,23 +30,15 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      // Check password
-      // For simplicity, we're just storing this in localStorage
-      // In a real application, you would want to use a secure session
-      localStorage.setItem('adminPassword', password);
-      
-      // Try to fetch blogs to validate the password
-      const response = await fetch(`/api/blogs?published=false`, {
-        headers: {
-          'Authorization': `Bearer ${password}`
-        }
+      const result = await signIn("credentials", {
+        password,
+        redirect: false,
       });
-
-      if (response.ok) {
+      
+      if (result?.ok) {
         router.push('/admin/dashboard');
       } else {
         setError('Invalid password');
-        localStorage.removeItem('adminPassword');
       }
     } catch (error) {
       console.error('Error logging in:', error);
@@ -47,6 +47,13 @@ export default function AdminLogin() {
       setLoading(false);
     }
   };
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (status === "authenticated") {
+    return <div>Redirecting to dashboard...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-16 flex justify-center items-center min-h-screen">
