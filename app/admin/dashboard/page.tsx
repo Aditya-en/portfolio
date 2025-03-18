@@ -31,7 +31,7 @@ import {
     const router = useRouter();
   
     useEffect(() => {
-    
+
       const fetchPosts = async () => {
         try {
           const response = await fetch('/api/blogs?published=false');

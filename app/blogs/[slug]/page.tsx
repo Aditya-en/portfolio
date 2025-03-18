@@ -27,7 +27,6 @@ export default function BlogPostPage() {
   useEffect(() => {
     const fetchPost = async () => {
       if (!slug) return;
-
       try {
         const response = await fetch(`/api/blogs/${slug}`);
         if (response.ok) {
@@ -154,13 +153,13 @@ export default function BlogPostPage() {
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Blog
       </Link>
-
       <article className="max-w-3xl mx-auto">
         {post.coverImage && (
           <div className="w-full h-72 mb-6 overflow-hidden rounded-lg">
             <img
               src={post.coverImage}
               alt={post.title}
+
               className="w-full h-full object-cover"
             />
           </div>
@@ -188,7 +187,6 @@ export default function BlogPostPage() {
             ))}
           </div>
         </div>
-
         <div className="prose prose-orange dark:prose-invert prose-base max-w-none 
         leading-7 lg:leading-8">  {/* Increased line height */}
           <ReactMarkdown

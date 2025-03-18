@@ -39,6 +39,7 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 py-8 relative z-10 max-w-7xl">
+
       <NeuralNetworkBackground />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <MotionSection
@@ -47,11 +48,11 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Intro text section with larger text for desktop */}
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
             Hi, I'm <GradientText>Aditya Sahani</GradientText>
           </h1>
           <p className="text-xl md:text-2xl mb-6">An aspiring ML engineer with a passion for web development and machine learning.</p>
+
           <div className="flex justify-center space-x-4">
             <MotionLink
               href="mailto:adityasahani443@gmail.com"
@@ -93,13 +94,13 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          {/* Tech stack with max-width for desktop */}
           <div className="w-full max-w-4xl">
             <h2 className="text-3xl font-bold mb-4 text-center">
               <GradientText>Tech Stack and Skills</GradientText>
             </h2>
             <TechStack />
           </div>
+
         </MotionSection>
 
         <MotionSection
