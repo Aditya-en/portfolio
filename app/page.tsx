@@ -38,7 +38,7 @@ export default function Home() {
   }, []);
 
   return (
-    <>
+    <div className="container mx-auto px-4 py-8 relative z-10 max-w-7xl">
       <NeuralNetworkBackground />
       <div className="container mx-auto px-4 py-8 relative z-10">
         <MotionSection
@@ -243,6 +243,6 @@ export default function Home() {
           </div>
         </MotionSection>
       </div>
-    </>
+      </div>
   )
 }
