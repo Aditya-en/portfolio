@@ -1,7 +1,6 @@
 // app/blogs/[slug]/page.tsx
 'use client';
-
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { BlogPost } from '@/types/blog';
 import GradientText from '@/components/gradient-text';
@@ -9,9 +8,15 @@ import { Calendar, Clock, ArrowLeft, Tag } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
+
+// Add type for custom components
+interface MarkdownComponents {
+  [nodeType: string]: React.ElementType<any> | React.ComponentType<any>;
+}
 
 export default function BlogPostPage() {
   const [post, setPost] = useState<BlogPost | null>(null);
@@ -22,7 +27,7 @@ export default function BlogPostPage() {
   useEffect(() => {
     const fetchPost = async () => {
       if (!slug) return;
-      
+
       try {
         const response = await fetch(`/api/blogs/${slug}`);
         if (response.ok) {
@@ -41,6 +46,86 @@ export default function BlogPostPage() {
 
     fetchPost();
   }, [slug]);
+  // Custom Markdown components
+  const MarkdownComponents: MarkdownComponents = {
+    p: ({ children }) => {
+      // Check if the paragraph contains only an image
+      if (React.Children.toArray(children).every(
+        (child) => React.isValidElement(child) && child.type === 'img'
+      )) {
+        return <>{children}</>;
+      }
+      return <p className="mb-4">{children}</p>;
+    },
+    // Handle YouTube URLs specifically
+    a: ({ href, children }) => {
+      if (href?.includes('youtu.be') || href?.includes('youtube.com')) {
+        const videoId = href.match(/(?:youtu\.be\/|v=)([a-zA-Z0-9_-]{11})/)?.[1];
+        return (
+          <div className="my-8 aspect-video rounded-lg shadow-xl overflow-hidden">
+            <iframe
+              src={`https://www.youtube.com/embed/${videoId}`}
+              className="w-full h-full"
+              allowFullScreen
+            />
+          </div>
+        );
+      }
+    },
+    h1: ({ children }) => <h1 className="text-3xl font-bold my-4">{children}</h1>,
+    h2: ({ children }) => <h2 className="text-2xl font-bold my-3">{children}</h2>,
+    h3: ({ children }) => <h3 className="text-xl font-semibold my-4">{children}</h3>,
+    ul: ({ children }) => <ul className="list-disc pl-8 my-4 pl-3" >{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal pl-8 my-4">{children}</ol>,
+    li: ({ children }) => <li className="mb-2">{children}</li>,
+    hr: () => <hr className="my-8 border-t-2 border-orange-500/20" />,
+
+    div: ({ node, className, children, ...props }) => {
+      if (className?.includes('video-container')) {
+        return (
+          <div className="my-8 aspect-video rounded-lg shadow-xl overflow-hidden">
+            {children}
+          </div>
+        );
+      }
+      return <div {...props}>{children}</div>;
+    },
+
+    blockquote: ({ children }) => (
+      <blockquote className="border-l-4 border-orange-500 pl-4 my-6 text-muted-foreground italic">
+        {children}
+      </blockquote>
+    ),
+
+    table: ({ children }) => (
+      <div className="overflow-x-auto my-6">
+        <table className="min-w-full border-collapse">
+          {children}
+        </table>
+      </div>
+    ),
+
+    iframe: ({ src, title }) => (
+      <div className="my-8 aspect-video rounded-lg shadow-xl overflow-hidden">
+        <iframe
+          src={src}
+          title={title || 'Embedded content'}
+          className="w-full h-full"
+          allowFullScreen
+        />
+      </div>
+    ),
+
+    img: ({ src, alt }) => (
+        <img
+          src={src || ''}
+          alt={alt || 'Blog image'}
+          className="mx-auto rounded-lg shadow-xl transition-all duration-300 
+                   group-hover:shadow-2xl max-w-full h-auto object-cover"
+          loading="lazy"
+        />
+    ),
+  };
 
   if (loading) {
     return (
@@ -69,22 +154,22 @@ export default function BlogPostPage() {
         <ArrowLeft className="w-4 h-4 mr-2" />
         Back to Blog
       </Link>
-      
+
       <article className="max-w-3xl mx-auto">
         {post.coverImage && (
           <div className="w-full h-72 mb-6 overflow-hidden rounded-lg">
-            <img 
-              src={post.coverImage} 
-              alt={post.title} 
+            <img
+              src={post.coverImage}
+              alt={post.title}
               className="w-full h-full object-cover"
             />
           </div>
         )}
-        
+
         <h1 className="text-4xl font-bold mb-4">
           <GradientText>{post.title}</GradientText>
         </h1>
-        
+
         <div className="flex flex-wrap items-center gap-4 mb-8 text-sm text-muted-foreground">
           <div className="flex items-center">
             <Calendar className="w-4 h-4 mr-1" />
@@ -103,11 +188,13 @@ export default function BlogPostPage() {
             ))}
           </div>
         </div>
-        
-        <div className="prose prose-orange dark:prose-invert max-w-none">
+
+        <div className="prose prose-orange dark:prose-invert prose-base max-w-none 
+        leading-7 lg:leading-8">  {/* Increased line height */}
           <ReactMarkdown
+            components={MarkdownComponents}
             remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight]}
+            rehypePlugins={[rehypeHighlight, rehypeRaw]}
           >
             {post.content}
           </ReactMarkdown>
