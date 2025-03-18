@@ -26,31 +26,21 @@ import {
   export default function AdminDashboard() {
     const [posts, setPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(true);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [slug, setSlug] = useState<string | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const router = useRouter();
   
     useEffect(() => {
-      const adminPassword = localStorage.getItem('adminPassword');
-    
-      if (!adminPassword) {
-        router.push('/admin');
-      }
-    
+
       const fetchPosts = async () => {
         try {
-          const response = await fetch('/api/blogs?published=false', {
-            headers: {
-              'Authorization': `Bearer ${adminPassword}`
-            }
-          });
+          const response = await fetch('/api/blogs?published=false');
     
           if (response.ok) {
             const data = await response.json();
             setPosts(data);
           } else if (response.status === 401) {
             console.log("Unauthorized access. Redirecting to login.");
-            localStorage.removeItem('adminPassword');
             router.push('/admin');
           } else {
             console.error('Failed to fetch blog posts');
@@ -67,29 +57,18 @@ import {
     
   
     const handleDelete = async () => {
-      if (!deleteId) return;
-  
-      const adminPassword = localStorage.getItem('adminPassword');
-      if (!adminPassword) {
-        console.log("redirecting to /admin from dashboard")
-        router.push('/admin');
-        return;
-      }
-  
+      if (!slug) return;
+
       try {
-        const response = await fetch(`/api/blogs/${deleteId}?password=${adminPassword}`, {
+        const response = await fetch(`/api/blogs/${slug}`, {
           method: 'DELETE'
         });
   
         if (response.ok) {
-          // Remove the deleted post from the state
-          setPosts(posts.filter(post => post.id !== deleteId));
+          setPosts(posts.filter(post => post.slug !== slug));
           setDeleteDialogOpen(false);
         } else if (response.status === 401) {
-          // Unauthorized, redirect to login
-          localStorage.removeItem('adminPassword');
           console.log("redirecting to /admin from dashboard a")
-
           router.push('/admin');
         } else {
           console.error('Failed to delete blog post');
@@ -108,13 +87,12 @@ import {
       }
   
       try {
-        const response = await fetch(`/api/blogs/${post.id}`, {
+        const response = await fetch(`/api/blogs/${post.slug}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            password: adminPassword,
             published: !post.published
           })
         });
@@ -126,7 +104,6 @@ import {
           ));
         } else if (response.status === 401) {
           // Unauthorized, redirect to login
-          localStorage.removeItem('adminPassword');
           console.log("redirecting to /admin from dashboard")
           router.push('/admin');
         } else {
@@ -221,7 +198,7 @@ import {
                       </Link>
                     </Button>
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/admin/edit/${post.id}`}>
+                      <Link href={`/admin/edit/${post.slug}`}>
                         <Edit className="w-4 h-4 mr-1" />
                         Edit
                       </Link>
@@ -231,7 +208,7 @@ import {
                     variant="destructive" 
                     size="sm"
                     onClick={() => {
-                      setDeleteId(post.id);
+                      setSlug(post.slug);
                       setDeleteDialogOpen(true);
                     }}
                   >
@@ -254,7 +231,7 @@ import {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600">
+              <AlertDialogAction onClick={ handleDelete} className="bg-red-500 hover:bg-red-600">
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>

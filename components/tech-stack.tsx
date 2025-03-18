@@ -38,9 +38,10 @@ const technologies = [
   },
 ]
 
+
 export default function TechStack() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {technologies.map((category, categoryIndex) => (
         <motion.div
           key={category.category}
@@ -48,20 +49,28 @@ export default function TechStack() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: categoryIndex * 0.1 }}
         >
-          <h3 className="text-xl font-semibold mb-3">{category.category}</h3>
+          <h3 className="text-2xl font-bold mb-4 text-primary/90">{category.category}</h3>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {category.items.map((tech, index) => (
               <motion.div
                 key={tech.name}
-                className="flex items-center p-2 rounded-md bg-gradient-to-br from-secondary to-accent"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.05 }}
+                className="flex flex-col items-center p-6 rounded-xl bg-background/50 border border-border/50 shadow-sm hover:shadow-md transition-shadow backdrop-blur-sm"
+                whileHover={{ y: -4, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ 
+                  duration: 0.3, 
+                  delay: index * 0.05,
+                  type: "spring",
+                  stiffness: 150,
+                  damping: 10
+                }}
               >
-                <Icon icon={tech.icon} className="w-6 h-6 mr-2" />
-                <span>{tech.name}</span>
+                <div className="mb-3 p-3 rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10">
+                  <Icon icon={tech.icon} className="w-8 h-8 text-primary" />
+                </div>
+                <span className="text-center font-medium text-sm md:text-base">{tech.name}</span>
               </motion.div>
             ))}
           </div>
@@ -70,4 +79,3 @@ export default function TechStack() {
     </div>
   )
 }
-

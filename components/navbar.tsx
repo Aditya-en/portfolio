@@ -35,19 +35,66 @@ export default function Navbar() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="flex items-center space-x-4">
-        <Link href="/" className={pathname === "/" ? "text-primary" : "text-foreground"}>
-          Home
+      <div className="flex items-center space-x-8"> {/* Increased spacing */}
+        <Link 
+          href="/" 
+          className={`relative pb-2 transition-colors duration-300 ${
+            pathname === "/" ? "text-orange-500" : "text-foreground hover:text-orange-500"
+          }`}
+        >
+          <span className="relative">
+            Home
+            <motion.span
+              className="absolute left-0 -bottom-1 w-full h-0.5 bg-orange-500"
+              initial={{ scaleX: 0 }}
+              animate={{ 
+                scaleX: pathname === "/" ? 1 : 0,
+                backgroundColor: pathname === "/" ? "#f97316" : "transparent"
+              }}
+              whileHover={{ scaleX: 1 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            />
+          </span>
         </Link>
-        <Link href="/blogs" className={pathname === "/blogs" ? "text-primary" : "text-foreground"}>
-          Blogs
+
+        <Link 
+          href="/blogs" 
+          className={`relative pb-2 transition-colors duration-300 ${
+            pathname === "/blogs" ? "text-orange-500" : "text-foreground hover:text-orange-500"
+          }`}
+        >
+          <span className="relative">
+            Blogs
+            <motion.span
+              className="absolute left-0 -bottom-1 w-full h-0.5 bg-orange-500"
+              initial={{ scaleX: 0 }}
+              animate={{ 
+                scaleX: pathname === "/blogs" ? 1 : 0,
+                backgroundColor: pathname === "/blogs" ? "#f97316" : "transparent"
+              }}
+              whileHover={{ scaleX: 1 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            />
+          </span>
         </Link>
-        <button onClick={scrollToContact} className="text-foreground">
-          Contact
+
+        <button 
+          onClick={scrollToContact} 
+          className="text-foreground hover:text-orange-500 relative pb-2 transition-colors duration-300"
+        >
+          <span className="relative">
+            Contact
+            <motion.span
+              className="absolute left-0 -bottom-1 w-full h-0.5 bg-orange-500"
+              initial={{ scaleX: 0 }}
+              whileHover={{ scaleX: 1 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            />
+          </span>
         </button>
+        
         <ModeToggle />
       </div>
     </motion.nav>
   )
 }
-

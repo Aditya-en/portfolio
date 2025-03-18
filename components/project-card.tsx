@@ -28,7 +28,7 @@ export default function ProjectCard({ title, description, technologies, repoUrl 
           </span>
         ))}
       </div>
-      <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+      <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline hover:text-orange-400">
         View on GitHub
       </a>
     </motion.div>
