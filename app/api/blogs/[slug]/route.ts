@@ -39,7 +39,7 @@ export async function PUT(
   }
 
   try {
-    const { password, ...postData } = await request.json();
+    const { ...postData } = await request.json();
     const post = await getBlogPostBySlug(params.slug);
     
     if (!post) {
