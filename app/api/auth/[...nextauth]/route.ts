@@ -36,6 +36,9 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }:{url:any, baseUrl:any}) {
+      if (url.includes('/admin/dashboard')) {
+        return url;
+      }
       // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       // Allows callback URLs on the same origin
