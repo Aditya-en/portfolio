@@ -10,8 +10,11 @@ import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
+import 'katex/dist/katex.min.css';
 
 // Add type for custom components
 interface MarkdownComponents {
@@ -188,11 +191,11 @@ export default function BlogPostPage() {
           </div>
         </div>
         <div className="prose prose-orange dark:prose-invert prose-base max-w-none 
-        leading-7 lg:leading-8">  {/* Increased line height */}
+        leading-7 lg:leading-8 overflow-x-auto scrollbar-hide">
           <ReactMarkdown
             components={MarkdownComponents}
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeHighlight, rehypeRaw]}
+            remarkPlugins={[remarkGfm, remarkMath]}
+            rehypePlugins={[rehypeKatex, rehypeHighlight, rehypeRaw]}
           >
             {post.content}
           </ReactMarkdown>
