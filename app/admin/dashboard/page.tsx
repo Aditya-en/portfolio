@@ -32,38 +32,36 @@ import {
     const { data: session, status } = useSession({
       required: true,
       onUnauthenticated() {
-        router.push('/admin');
+        router.replace('/admin');
       }
     });
-  
     useEffect(() => {
+      if (status === "authenticated") {
+        fetchPosts();
+      }
+    }, [status, router]);
     
-      const fetchPosts = async () => {
-        try {
-          const response = await fetch('/api/blogs?published=false', {
-            credentials: 'include'
-          });
-    
-          if (response.ok) {
-            const data = await response.json();
-            setPosts(data);
-          } else if (response.status === 401) {
-            console.log("Unauthorized access. Redirecting to login.");
-            router.push('/admin');
-          } else {
-            console.error('Failed to fetch blog posts');
-          }
-        } catch (error) {
-          console.error('Error fetching blog posts:', error);
-        } finally {
-          setLoading(false);
-        }
-      };
-    
-      fetchPosts();
-    }, [router]);
-    
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch('/api/blogs?published=false', {
+          credentials: 'include'
+        });
   
+        if (response.ok) {
+          const data = await response.json();
+          setPosts(data);
+        // } else if (response.status === 401) {
+        //   console.log("Unauthorized access. Redirecting to login.");
+        //   router.push('/admin');
+        } else {
+          console.error('Failed to fetch blog posts');
+        }
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
     const handleDelete = async () => {
       if (!slug) return;
 
@@ -76,9 +74,9 @@ import {
         if (response.ok) {
           setPosts(posts.filter(post => post.slug !== slug));
           setDeleteDialogOpen(false);
-        } else if (response.status === 401) {
-          console.log("redirecting to /admin from dashboard a")
-          router.push('/admin');
+        // } else if (response.status === 401) {
+        //   console.log("redirecting to /admin from dashboard a")
+        //   router.push('/admin');
         } else {
           console.error('Failed to delete blog post');
         }
@@ -89,10 +87,11 @@ import {
   
     const handleTogglePublish = async (post: BlogPost) => {
 
-      if (status !== "authenticated") {
-        router.push('/admin');
-        return;
-      };
+      // if (status !== "authenticated") {
+      //   console.log("redirecting to admin from dashboard")
+      //   router.push('/admin');
+      //   return;
+      // };
 
       try {
         const response = await fetch(`/api/blogs/${post.slug}`, {
@@ -127,7 +126,7 @@ import {
       router.push('/admin');
     };
   
-    if (loading) {
+    if (status === "loading" || status !== "authenticated") {
       return (
         <div className="container mx-auto px-4 py-8 flex justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
