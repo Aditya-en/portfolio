@@ -8,6 +8,7 @@ import GradientText from '@/components/gradient-text';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar, Edit, Trash2, Plus, Eye } from 'lucide-react';
+import { signOut, useSession } from "next-auth/react";
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
@@ -20,7 +21,6 @@ import {
     AlertDialogFooter, 
     AlertDialogHeader, 
     AlertDialogTitle, 
-    AlertDialogTrigger 
   } from '@/components/ui/alert-dialog';
   
   export default function AdminDashboard() {
@@ -29,12 +29,20 @@ import {
     const [slug, setSlug] = useState<string | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const router = useRouter();
+    const { data: session, status } = useSession({
+      required: true,
+      onUnauthenticated() {
+        router.push('/admin');
+      }
+    });
   
     useEffect(() => {
     
       const fetchPosts = async () => {
         try {
-          const response = await fetch('/api/blogs?published=false');
+          const response = await fetch('/api/blogs?published=false', {
+            credentials: 'include'
+          });
     
           if (response.ok) {
             const data = await response.json();
@@ -61,7 +69,8 @@ import {
 
       try {
         const response = await fetch(`/api/blogs/${slug}`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          credentials: 'include'
         });
   
         if (response.ok) {
@@ -79,13 +88,12 @@ import {
     };
   
     const handleTogglePublish = async (post: BlogPost) => {
-      const adminPassword = localStorage.getItem('adminPassword');
-      if (!adminPassword) {
-        console.log("redirecting to /admin from dashboard")
+
+      if (status !== "authenticated") {
         router.push('/admin');
         return;
-      }
-  
+      };
+
       try {
         const response = await fetch(`/api/blogs/${post.slug}`, {
           method: 'PUT',
@@ -94,7 +102,8 @@ import {
           },
           body: JSON.stringify({
             published: !post.published
-          })
+          }),
+          credentials: 'include'
         });
   
         if (response.ok) {
@@ -103,7 +112,6 @@ import {
             p.id === post.id ? { ...p, published: !p.published } : p
           ));
         } else if (response.status === 401) {
-          // Unauthorized, redirect to login
           console.log("redirecting to /admin from dashboard")
           router.push('/admin');
         } else {
@@ -114,9 +122,8 @@ import {
       }
     };
   
-    const handleLogout = () => {
-      localStorage.removeItem('adminPassword');
-      console.log("redirecting to /admin from dashboard")
+    const handleLogout = async () => {
+      await signOut({ redirect: false });
       router.push('/admin');
     };
   

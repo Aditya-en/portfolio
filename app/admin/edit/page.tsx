@@ -56,7 +56,9 @@ export default function BlogEditor() {
     if (isEditing && status === "authenticated") {
       const fetchPost = async () => {
         try {
-          const response = await fetch(`/api/blogs/${postId}`);
+          const response = await fetch(`/api/blogs/${postId}`, {
+            credentials: 'include'
+          });
           
           if (response.ok) {
             const post = await response.json();
@@ -144,15 +146,12 @@ export default function BlogEditor() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
+        credentials: 'include'
       });
 
       if (response.ok) {
         router.push('/admin/dashboard');
-      } else if (response.status === 401) {
-        // Unauthorized, redirect to login
-        localStorage.removeItem('adminPassword');
-        router.push('/admin');
       } else {
         const data = await response.json();
         setError(data.error || 'Failed to save blog post');

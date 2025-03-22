@@ -21,7 +21,9 @@ export default function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch('/api/blogs');
+        const response = await fetch('/api/blogs', {
+          credentials: 'include'
+        });
         if (response.ok) {
           const data = await response.json();
           setPosts(data.slice(0, 3)); // Get only top 3 posts

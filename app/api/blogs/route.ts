@@ -12,7 +12,7 @@ export async function GET(request: Request) {
     const onlyPublished = searchParams.get('published') !== 'false';
     console.log("fetching posts from db")
     const posts = await getBlogPosts(onlyPublished);
-    console.log(posts)
+    if (posts) console.log("posts are not empty")
     return NextResponse.json(posts);
   } catch (error) {
     console.error('Error fetching blog posts:', error);
