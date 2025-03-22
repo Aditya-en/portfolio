@@ -36,7 +36,8 @@ export default function AdminLogin() {
       });
       
       if (result?.ok) {
-        router.push('/admin/dashboard');
+        console.log("redirecting to dashboard from admin")
+        router.replace('/admin/dashboard');
       } else {
         setError('Invalid password');
       }
