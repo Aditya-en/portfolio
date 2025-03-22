@@ -191,7 +191,7 @@ export default function BlogPostPage() {
           </div>
         </div>
         <div className="prose prose-orange dark:prose-invert prose-base max-w-none 
-        leading-7 lg:leading-8">  {/* Increased line height */}
+        leading-7 lg:leading-8 overflow-x-auto scrollbar-hide">
           <ReactMarkdown
             components={MarkdownComponents}
             remarkPlugins={[remarkGfm, remarkMath]}
