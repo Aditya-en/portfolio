@@ -7,7 +7,7 @@ import { BlogPost, BlogPostDTO } from '@/types/blog';
 import GradientText from '@/components/gradient-text';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-
+import { useSession } from "next-auth/react";
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -42,11 +42,16 @@ export default function BlogEditor() {
   const [tagInput, setTagInput] = useState('');
   const [previewTab, setPreviewTab] = useState('edit');
   const [error, setError] = useState('');
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push('/admin');
+    }
+  });
 
   useEffect(() => {
     // Check if user is authenticated
-    const adminPassword = localStorage.getItem('adminPassword');
-    if (!adminPassword) {
+    if (status !== "authenticated") {
       router.push('/admin');
       return;
     }
@@ -56,9 +61,7 @@ export default function BlogEditor() {
       const fetchPost = async () => {
         try {
           const response = await fetch(`/api/blogs/${postId}`, {
-            headers: {
-              'Authorization': `Bearer ${adminPassword}`
-            }
+            credentials: "include"
           });
 
           if (response.ok) {
@@ -73,10 +76,7 @@ export default function BlogEditor() {
               published: post.published,
               coverImage: post.coverImage,
             });
-          } else if (response.status === 401) {
-            // Unauthorized, redirect to login
-            localStorage.removeItem('adminPassword');
-            router.push('/admin');
+
           } else {
             setError('Failed to fetch blog post');
           }
@@ -135,8 +135,8 @@ export default function BlogEditor() {
     setError('');
     setSaving(true);
 
-    const adminPassword = localStorage.getItem('adminPassword');
-    if (!adminPassword) {
+    // Check if user is authenticated
+    if (status !== "authenticated") {
       router.push('/admin');
       return;
     }
@@ -152,16 +152,13 @@ export default function BlogEditor() {
         },
         body: JSON.stringify({
           ...formData,
-          password: adminPassword
-        })
+        }),
+        credentials: "include"
       });
 
       if (response.ok) {
         router.push('/admin/dashboard');
-      } else if (response.status === 401) {
-        // Unauthorized, redirect to login
-        localStorage.removeItem('adminPassword');
-        router.push('/admin');
+
       } else {
         const data = await response.json();
         setError(data.error || 'Failed to save blog post');
