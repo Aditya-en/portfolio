@@ -61,18 +61,29 @@ export default function BlogPostPage() {
     },
     // Handle YouTube URLs specifically
     a: ({ href, children }) => {
-      if (href?.includes('youtu.be') || href?.includes('youtube.com')) {
-        const videoId = href.match(/(?:youtu\.be\/|v=)([a-zA-Z0-9_-]{11})/)?.[1];
-        return (
-          <div className="my-8 aspect-video rounded-lg shadow-xl overflow-hidden">
-            <iframe
-              src={`https://www.youtube.com/embed/${videoId}`}
-              className="w-full h-full"
-              allowFullScreen
-            />
-          </div>
-        );
+      if (href && (href.includes('youtu.be') || href.includes('youtube.com'))) {
+        const match = href.match(/(?:youtu\.be\/|v=|embed\/)([a-zA-Z0-9_-]{11})/);
+        const videoId = match?.[1];
+
+        if (videoId) {
+          return (
+            <div className="my-8 aspect-video rounded-lg shadow-xl overflow-hidden">
+              <iframe
+                src={`https://www.youtube.com/embed/${videoId}`}
+                title="YouTube video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="w-full h-full"
+              />
+            </div>
+          );
+        }
       }
+      return (
+        <a href={href} className="text-orange-500 underline hover:opacity-80" target="_blank" rel="noopener noreferrer">
+          {children}
+        </a>
+      );
     },
     h1: ({ children }) => <h1 className="text-3xl font-bold my-4">{children}</h1>,
     h2: ({ children }) => <h2 className="text-2xl font-bold my-3">{children}</h2>,
