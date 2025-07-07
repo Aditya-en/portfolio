@@ -1,11 +1,10 @@
 "use client"
 import dynamic from "next/dynamic"
-import { useEffect, useState } from "react"
+import { useBlogs } from "@/hooks/use-blogs"
 import GradientText from "@/components/gradient-text"
 import { Github, Linkedin, Mail, Calendar, Tag } from "lucide-react"
 import TechStack from "@/components/tech-stack"
 import ProjectCard from "@/components/project-card"
-import { BlogPost } from "@/types/blog"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
@@ -15,35 +14,16 @@ const MotionLink = dynamic(() => import("@/components/motion-link"), { ssr: fals
 const NeuralNetworkBackground = dynamic(() => import("@/components/neural-network-background"), { ssr: false })
 
 export default function Home() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch('/api/blogs', {
-          credentials: 'include'
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setPosts(data.slice(0, 3)); // Get only top 3 posts
-        } else {
-          console.error('Failed to fetch blog posts');
-        }
-      } catch (error) {
-        console.error('Error fetching blog posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPosts();
-  }, []);
+  const { posts, isLoading: loading } = useBlogs();
+  
+  const latestPosts = posts?.slice(0, 3) || [];
 
   return (
     <div className="container mx-auto px-4 py-8 relative z-10 max-w-7xl">
 
       <NeuralNetworkBackground />
       <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* ... (rest of your hero section JSX) ... */}
         <MotionSection
           className="mb-16 text-center"
           initial={{ opacity: 0, y: 50 }}
@@ -149,9 +129,9 @@ export default function Home() {
             <div className="flex justify-center my-12">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
             </div>
-          ) : posts.length > 0 ? (
+          ) : latestPosts.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {posts.map((post) => (
+              {latestPosts.map((post) => (
                 <Link href={`/blogs/${post.slug}`} key={post.id} className="transition-transform hover:scale-105">
                   <Card className="h-full flex flex-col hover:shadow-lg transition-shadow duration-300">
                     {post.coverImage && (
@@ -160,6 +140,7 @@ export default function Home() {
                           src={post.coverImage}
                           alt={post.title}
                           className="w-full h-full object-cover"
+                          loading="lazy" // Add lazy loading
                         />
                       </div>
                     )}
@@ -200,6 +181,7 @@ export default function Home() {
           </div>
         </MotionSection>
 
+        {/* ... (rest of your contact section JSX) ... */}
         <MotionSection
           id="contact"
           className="mb-16"
