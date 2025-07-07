@@ -9,7 +9,6 @@ const technologies = [
     items: [
       { name: "Machine Learning", icon: "vscode-icons:file-type-python" },
       { name: "Deep Learning", icon: "logos:tensorflow" },
-      { name: "Natural Language Processing", icon: "carbon:nlp" },
       { name: "Computer Vision", icon: "carbon:image-search" },
       { name: "Generative AI", icon: "carbon:machine-learning-model" },
       { name: "PyTorch", icon: "logos:pytorch-icon" },

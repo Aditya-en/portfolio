@@ -1,37 +1,15 @@
 // app/blogs/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import GradientText from '@/components/gradient-text';
-import { BlogPost } from '@/types/blog';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Tag } from 'lucide-react';
+import { Calendar, Tag } from 'lucide-react';
+import { useBlogs } from '@/hooks/use-blogs';
 
 export default function Blogs() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch('/api/blogs');
-        if (response.ok) {
-          const data = await response.json();
-          setPosts(data);
-        } else {
-          console.error('Failed to fetch blog posts');
-        }
-      } catch (error) {
-        console.error('Error fetching blog posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, []);
+  const { posts, isLoading, isError } = useBlogs();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -39,11 +17,15 @@ export default function Blogs() {
         <GradientText>ML Engineering Blog</GradientText>
       </h1>
       
-      {loading ? (
+      {isLoading ? (
         <div className="flex justify-center my-12">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
         </div>
-      ) : posts.length > 0 ? (
+      ) : isError ? (
+        <div className="text-center py-12 text-red-500">
+          <p>Failed to load posts. Please try again later.</p>
+        </div>
+      ) : posts && posts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
             <Link href={`/blogs/${post.slug}`} key={post.id} className="transition-transform hover:scale-105">
@@ -54,6 +36,7 @@ export default function Blogs() {
                       src={post.coverImage} 
                       alt={post.title} 
                       className="w-full h-full object-cover"
+                      loading="lazy" // Add lazy loading
                     />
                   </div>
                 )}
