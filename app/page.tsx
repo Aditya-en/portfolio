@@ -23,7 +23,6 @@ export default function Home() {
 
       <NeuralNetworkBackground />
       <div className="container mx-auto px-4 py-8 relative z-10">
-        {/* ... (rest of your hero section JSX) ... */}
         <MotionSection
           className="mb-16 text-center"
           initial={{ opacity: 0, y: 50 }}
@@ -94,24 +93,81 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-4 text-center">
             <GradientText>Projects</GradientText>
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <ProjectCard
-              title="Online Code Editor"
-              description="A web based code editor with file system and integrated terminal"
-              technologies={["React", "Node.js", "MongoDB", "Express"]}
-              repoUrl="https://github.com/Aditya-en/parth-code-editor"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <ProjectCard
               title="Video Transcoder Service"
               description="A fairly auto scaling video transcoding service on AWS infrastructure"
               technologies={["Express", "FFmpeg", "AWS"]}
               repoUrl="https://github.com/Aditya-en/video-transcoder"
+              imageUrl="https://res.cloudinary.com/dsb3uulcd/image/upload/v1751898912/Screenshot_From_2025-07-07_20-04-28_izbgdr.png"
             />
             <ProjectCard
               title="Trained Variational AutoEncoder"
               description="A VAE architecture model to losslessly compress images and reconstruct them"
               technologies={["Python", "PyTorch"]}
               repoUrl="https://github.com/Aditya-en/vae"
+              imageUrl="https://res.cloudinary.com/dsb3uulcd/image/upload/v1751897958/reconstructed_images_junche.png"
+            />
+            <ProjectCard
+              title="Online Code Editor"
+              description="A web based code editor with file system and integrated terminal"
+              technologies={["React", "Node.js", "MongoDB", "Express"]}
+              repoUrl="https://github.com/Aditya-en/parth-code-editor"
+              imageUrl="https://res.cloudinary.com/dsb3uulcd/image/upload/v1751897778/Screenshot_from_simple_aac_recording0_esc1yo.png"
+            />
+          </div>
+        </MotionSection>
+
+        <MotionSection
+          className="mb-16"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+        >
+          <h2 className="text-3xl font-bold mb-4 text-center">
+            <GradientText>Mini Projects</GradientText>
+          </h2>
+          <p className="text-center text-muted-foreground mb-8">Smaller projects and fun experiments deployed on Vercel and Cloudflare.</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ProjectCard
+              title="DropIN"
+              description="A frontend client for managing S3 storage directly from browser"
+              technologies={["React", "Typescript", "S3"]}
+              repoUrl="https://github.com/Aditya-en/dropin"
+              liveUrl="https://dropin-store.vercel.app"
+              imageUrl="https://res.cloudinary.com/dsb3uulcd/image/upload/v1751897219/Screenshot_From_2025-07-07_19-36-39_mikg1e.png"
+            />
+            <ProjectCard
+              title="Focus Flow"
+              description="A productivity timer to manage work and break sessions using the Pomodoro Technique."
+              technologies={["Nextjs", "TypeScript", "TailwindCSS"]}
+              repoUrl="https://github.com/Aditya-en/focus-flow"
+              liveUrl="https://focus-session.vercel.app"
+              imageUrl="https://res.cloudinary.com/dsb3uulcd/image/upload/v1751897219/Screenshot_From_2025-07-07_19-34-22_sooeg2.png"
+            />
+            <ProjectCard
+              title="Fractal Generator"
+              description="A simple simulation of the chaotic double pendulumn with user interactability"
+              technologies={["JavaScript", "HTML", "CSS", "Lambda", "Workers"]}
+              repoUrl="https://github.com/Aditya-en/fractal_generator"
+              liveUrl="https://fractal-generator.pages.dev/?type=mandelbrot&width=800&height=800&max_iter=300&zoom=1&rule=z**2+%2B+c&colormap=turbo&gamma=0.3"
+              imageUrl="https://res.cloudinary.com/dsb3uulcd/image/upload/v1751899160/Screenshot_From_2025-07-07_20-09-02_s6uh9s.png"
+            />
+            <ProjectCard
+              title="Double Pendulumn"
+              description="A simple simulation of the chaotic double pendulumn with user interactability"
+              technologies={["React", "TailwindCSS"]}
+              repoUrl="https://github.com/Aditya-en/double-pendulumn"
+              liveUrl="https://double-pendulumn.vercel.app"
+              imageUrl="https://res.cloudinary.com/dsb3uulcd/image/upload/v1751897006/Screenshot_From_2025-07-07_19-32-51_lhnbkk.png"
+            />
+            <ProjectCard
+              title="Pixel Perfect"
+              description="A simple site for common image editing features"
+              technologies={["React", "TailwindCSS"]}
+              repoUrl="https://github.com/Aditya-en/double-pendulumn"
+              liveUrl="https://pixel-perfect-steel.vercel.app/ "
+              imageUrl="https://res.cloudinary.com/dsb3uulcd/image/upload/v1751899951/Screenshot_From_2025-07-07_20-22-08_ekcs0c.png"
             />
           </div>
         </MotionSection>
@@ -181,13 +237,12 @@ export default function Home() {
           </div>
         </MotionSection>
 
-        {/* ... (rest of your contact section JSX) ... */}
         <MotionSection
           id="contact"
           className="mb-16"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
         >
           <h2 className="text-3xl font-bold mb-4 text-center">
             <GradientText>Contact</GradientText>
