@@ -35,13 +35,15 @@ import {
         router.replace('/admin');
       }
     });
+
     useEffect(() => {
       if (status === "authenticated") {
         fetchPosts();
       }
-    }, [status, router]);
+    }, [status]); // Removed router from dependency array as it's stable
     
     const fetchPosts = async () => {
+      setLoading(true); // Ensure loading is true at the start of a fetch
       try {
         const response = await fetch('/api/blogs?published=false', {
           credentials: 'include'
@@ -50,11 +52,9 @@ import {
         if (response.ok) {
           const data = await response.json();
           setPosts(data);
-        // } else if (response.status === 401) {
-        //   console.log("Unauthorized access. Redirecting to login.");
-        //   router.push('/admin');
         } else {
           console.error('Failed to fetch blog posts');
+          // Optionally set an error state here
         }
       } catch (error) {
         console.error('Error fetching blog posts:', error);
@@ -62,9 +62,9 @@ import {
         setLoading(false);
       }
     };
+
     const handleDelete = async () => {
       if (!slug) return;
-
       try {
         const response = await fetch(`/api/blogs/${slug}`, {
           method: 'DELETE',
@@ -74,9 +74,6 @@ import {
         if (response.ok) {
           setPosts(posts.filter(post => post.slug !== slug));
           setDeleteDialogOpen(false);
-        // } else if (response.status === 401) {
-        //   console.log("redirecting to /admin from dashboard a")
-        //   router.push('/admin');
         } else {
           console.error('Failed to delete blog post');
         }
@@ -86,13 +83,6 @@ import {
     };
   
     const handleTogglePublish = async (post: BlogPost) => {
-
-      // if (status !== "authenticated") {
-      //   console.log("redirecting to admin from dashboard")
-      //   router.push('/admin');
-      //   return;
-      // };
-
       try {
         const response = await fetch(`/api/blogs/${post.slug}`, {
           method: 'PUT',
@@ -106,13 +96,9 @@ import {
         });
   
         if (response.ok) {
-          // Update the post in the state
           setPosts(posts.map(p => 
             p.id === post.id ? { ...p, published: !p.published } : p
           ));
-        } else if (response.status === 401) {
-          console.log("redirecting to /admin from dashboard")
-          router.push('/admin');
         } else {
           console.error('Failed to update blog post');
         }
@@ -126,9 +112,9 @@ import {
       router.push('/admin');
     };
   
-    if (status === "loading" || status !== "authenticated") {
+    if (status === "loading" || !session) {
       return (
-        <div className="container mx-auto px-4 py-8 flex justify-center">
+        <div className="container mx-auto px-4 py-8 flex justify-center min-h-screen items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
         </div>
       );
@@ -152,8 +138,13 @@ import {
             </Button>
           </div>
         </div>
-  
-        {posts.length === 0 ? (
+
+        {/* --- THIS IS THE KEY CHANGE --- */}
+        {loading ? (
+          <div className="flex justify-center my-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div>
+          </div>
+        ) : posts.length === 0 ? (
           <Card className="text-center py-16">
             <CardContent>
               <p className="text-xl mb-4">No blog posts yet</p>
